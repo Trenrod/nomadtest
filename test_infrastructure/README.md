@@ -7,4 +7,4 @@ Read (also all sub chapters) to understand:
  * [Helpful example](https://manski.net/2016/09/vagrant-multi-machine-tutorial/)
 
  ## What we are going to create
-![](..\doc\diagrams\doc\vagrant_infrastructure\vagrant_infrastructure.png)
+![](../doc/diagrams/doc/vagrant_infrastructure/vagrant_infrastructure.png)
