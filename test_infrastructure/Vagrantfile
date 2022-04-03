@@ -1,0 +1,82 @@
+# Vagrant.configure("2") do |config|
+#   # https://docs.vagrantup.com.
+
+
+#   config.vm.define "nomad_jumpserver" do |nomad_jumpserver|
+#     nomad_jumpserver.vm.hostname = "nomad.dc1.nj1.jumpserver"
+#     nomad_jumpserver.vm.network "private_network", ip: "192.168.100.100"
+#     nomad_jumpserver.vm.box = "ubuntu/focal64"
+
+#     nomad_jumpserver.vm.provider "virtualbox" do |vb|
+#       # Display the VirtualBox GUI when booting the machine
+#       vb.gui = false
+    
+#       # Customize the amount of memory on the VM:
+#       vb.memory = "1024"
+#     end
+#   end
+
+#   config.vm.define "worker_dc1_vm1" do |worker_dc1_vm1|
+#     worker_dc1_vm1.vm.hostname = "nomad.dc1.vm1.worker"
+#     worker_dc1_vm1.vm.network "private_network", ip: "192.168.100.101"
+#     worker_dc1_vm1.vm.box = "ubuntu/focal64"
+
+#     worker_dc1_vm1.vm.provider "virtualbox" do |vb|
+#       # Display the VirtualBox GUI when booting the machine
+#       vb.gui = false
+    
+#       # Customize the amount of memory on the VM:
+#       vb.memory = "1024"
+#     end
+#   end
+
+#   config.vm.define "worker_dc1_vm2" do |worker_dc1_vm2|
+#     worker_dc1_vm2.vm.hostname = "nomad.dc1.vm2.worker"
+#     worker_dc1_vm2.vm.network "private_network", ip: "192.168.100.102"
+#     worker_dc1_vm2.vm.box = "ubuntu/focal64"
+
+#     worker_dc1_vm2.vm.provider "virtualbox" do |vb|
+#       # Display the VirtualBox GUI when booting the machine
+#       vb.gui = false
+    
+#       # Customize the amount of memory on the VM:
+#       vb.memory = "1024"
+#     end
+#   end
+
+#   # Enable provisioning with a shell script. Additional provisioners such as
+#   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+#   # documentation for more information about their specific syntax and use.
+#   # config.vm.provision "shell", inline: <<-SHELL
+#   #   apt-get update
+#   #   apt-get install -y apache2
+#   # SHELL
+# end
+
+BOX_IMAGE = "ubuntu/focal64"
+DC1_NODE_COUNT = 2
+DC2_NODE_COUNT = 2
+
+Vagrant.configure("2") do |config|
+  config.vm.define "jumpserver" do |subconfig|
+    subconfig.vm.box = BOX_IMAGE
+    subconfig.vm.hostname = "nomad.local.nj1.jumpserver"
+    subconfig.vm.network :private_network, ip: "10.0.1.1"
+  end
+  
+  (1..DC1_NODE_COUNT).each do |i|
+    config.vm.define "dc1.worker#{i}" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "nomad.dc1.vm#{i}.worker"
+      subconfig.vm.network :private_network, ip: "10.0.1.#{1+i}"
+    end
+  end
+
+  (1..DC2_NODE_COUNT).each do |i|
+    config.vm.define "dc2.worker#{i}" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "nomad.dc2.vm#{i}.worker"
+      subconfig.vm.network :private_network, ip: "10.0.1.#{1+DC1_NODE_COUNT+i}"
+    end
+  end
+end
