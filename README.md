@@ -5,9 +5,9 @@ For simplicity we will use a local emulation of multiple datacenters using Vagra
 
 Enjoy.
 
-## Fake multiple datacenters with Vagrant
+## Test infrastructure with multiple vms and datacenters with Vagrant
 
-[README.md](test_infrastructure/Vagrantfile)
+[README.md](test_infrastructure/README.md)
 
 ## TODO Bootstrap jumpserver and attach vms to nomad cluster
 
