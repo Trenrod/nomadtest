@@ -7,7 +7,7 @@ Enjoy.
 
 ## Test infrastructure with multiple vms and datacenters with Vagrant
 
-[README.md](test_infrastructure/README.md)
+[README.md](infrastructure/README.md)
 
 ## TODO Bootstrap jumpserver and attach vms to nomad cluster
 
