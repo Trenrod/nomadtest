@@ -38,6 +38,9 @@ As seen above we need in addition to the VM itself several components e.g. Nomad
 
 It may makes no sense to use `Ansible` here to provision the VM's. But if its fully automated it can't be that bad, right? Or I just suck so hard at Ruby and Shell scripts that I rather overkill this. Maybe we can reuse it later anyways.
 
- - [ ] TODO install ansible
- - [ ] TODO create static inventory
- - [ ] TODO create groups for node server and node client
+There fore next TODOS:
+
+ - [ ] TODO install ansible manually on the jumpserver
+ - [ ] TODO create static inventory with dedicated groups for node server and node client
+ - [ ] TODO create ansible scripts to provision them
+ 
