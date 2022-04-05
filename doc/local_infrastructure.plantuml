@@ -1,0 +1,90 @@
+@startuml jumpserver
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+AddProperty("Datacenter ID", "Local")
+AddProperty("VM ID", "nj1.local.jumper.nomad")
+AddProperty("Hostname", "nj1.local.jumper.nomad")
+AddProperty("Private IP", "10.0.1.1")
+Node(nomad_jumpserver, nomad_jumpserver, ubuntu, "Orchestration via Nomad will be triggered from this VM") {
+    Component(nomad, "Nomad")
+}
+@enduml
+
+@startuml nomad_server
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+Boundary(nomad_servers, "Nomad servers") {
+    AddProperty("Datacenter ID", "DC1")
+    AddProperty("VM ID", "ns1.dc1.server.nomad")
+    AddProperty("Hostname", "ns1.dc1.server.nomad")
+    AddProperty("Private IP", "10.0.1.2")
+    Node(dc1_ns1, ns1_server_nomad, ubuntu, "Nomad Server NS1 on DC1") {
+        Component(nomad_server1, "Nomad server mode")
+    }
+
+    AddProperty("Datacenter ID", "DC2")
+    AddProperty("VM ID", "ns2.dc2.server.nomad")
+    AddProperty("Hostname", "ns2.dc2.server.nomad")
+    AddProperty("Private IP", "10.0.1.3")
+    Node(dc2_ns1, ns2_server_nomad, ubuntu, "Nomad Server NS2 on DC2") {
+        Component(nomad_server2, "Nomad server mode")
+    }
+
+    AddProperty("Datacenter ID", "DC2")
+    AddProperty("VM ID", "ns3.dc2.server.nomad")
+    AddProperty("Hostname", "ns3.dc2.server.nomad")
+    AddProperty("Private IP", "10.0.1.4")
+    Node(dc2_ns2, ns2_server_nomad, ubuntu, "Nomad Server NS3 on DC2") {
+        Component(nomad_server3, "Nomad server mode")
+    }
+}
+@enduml
+
+@startuml nomad_client
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+Boundary(nomad_clients, "Nomad clients") {
+
+    Boundary(datacluster1, "Data Center 1") {
+        AddProperty("Datacenter ID", "DC1")
+        AddProperty("VM ID", "nc1.dc1.client.nomad")
+        AddProperty("Hostname", "nc1.dc1.client.nomad")
+        AddProperty("Private IP", "10.0.1.5")
+        Node(dc1_nc1, nc1_client_nomad, ubuntu, "Nomad client NC1 on DC1") {
+            Component(nomad_client1, "Nomad client mode")
+            Component(docker1, "Docker Engine")
+        }
+
+        AddProperty("Datacenter ID", "DC1")
+        AddProperty("VM ID", "nc2.dc1.client.nomad")
+        AddProperty("Hostname", "nc2.dc1.client.nomad")
+        AddProperty("Private IP", "10.0.1.6")
+        Node(dc1_nc2, nc2_dc1_client_nomad, ubuntu, "Nomad client NC2 on DC1") {
+            Component(nomad_client2, "nomad client mode")
+            Component(docker2, "Docker Engine")
+        }
+    }
+
+    Boundary(datacluster2, "Data Center 2") {
+        AddProperty("Datacenter ID", "DC2")
+        AddProperty("VM ID", "nc3.dc2.client.nomad")
+        AddProperty("Hostname", "nc3.dc2.client.nomad")
+        AddProperty("Private IP", "10.0.1.7")
+        Node(dc2_nc3, nc3_dc2_client_nomad, ubuntu, "Nomad client NC3 on DC2") {
+            Component(nomad_client3, "Nomad client mode")
+            Component(docker3, "Docker Engine")
+        }
+
+
+        AddProperty("Datacenter ID", "DC2")
+        AddProperty("VM ID", "nc4.dc2.client.nomad")
+        AddProperty("Hostname", "nc4.dc2.client.nomad")
+        AddProperty("Private IP", "10.0.1.8")
+        Node(dc2_nc4, nc4_dc2_client_nomad, ubuntu, "Nomad client NC4 on DC2") {
+            Component(nomad_client4, "Nomad client mode")
+            Component(docker4, "Docker Engine")
+        }
+    }
+}
+@enduml
