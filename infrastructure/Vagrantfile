@@ -1,32 +1,77 @@
 BOX_IMAGE = "ubuntu/focal64"
-SERVER_NODES = 2
+
+SERVER_DC1_NODES = 1
+SERVER_DC2_NODES = 2
+
 CLIENT_DC1_NODES = 2
 CLIENT_DC2_NODES = 2
 
 Vagrant.configure("2") do |config|
-  config.vm.define "jumpserver" do |subconfig|
+  config.vm.define "nj1.local.jumper.nomad" do |subconfig|
     subconfig.vm.box = BOX_IMAGE
-    subconfig.vm.hostname = "nomad.local.nj1.jumpserver"
-    subconfig.vm.network :private_network, ip: "10.0.1.1"
-  end
-
-  IP_OFFSET = 1
-
-  (1..CLIENT_DC1_NODES).each do |i|
-    config.vm.define "dc1.worker#{i}" do |subconfig|
-      subconfig.vm.box = BOX_IMAGE
-      subconfig.vm.hostname = "nomad.dc1.vm#{i}.worker"
-      subconfig.vm.network :private_network, ip: "10.0.1.#{1+IP_OFFSET}"
+    subconfig.vm.hostname = "nj1-local-jumper-nomad"
+    subconfig.vm.network :private_network, ip: "10.0.1.2", virtualbox__intnet: true
+    subconfig.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "1024"]
+      vb.customize ["modifyvm", :id, "--cpus", "2"]
     end
   end
 
-  IP_OFFSET = 1 + CLIENT_DC1_NODES
-
-  (1..CLIENT_DC2_NODES).each do |i|
-    config.vm.define "dc2.worker#{i}" do |subconfig|
+  # Server nodes
+  ## DC1 Server nodes
+  IP_OFFSET = 2
+  (1..SERVER_DC1_NODES).each do |i|
+    config.vm.define "ns#{i}.dc1.server.nomad" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
-      subconfig.vm.hostname = "nomad.dc2.vm#{i}.worker"
-      subconfig.vm.network :private_network, ip: "10.0.1.#{IP_OFFSET+i}"
+      subconfig.vm.hostname = "ns#{i}-dc1-server-nomad"
+      subconfig.vm.network :private_network, ip: "10.0.1.#{i+IP_OFFSET}", virtualbox__intnet: true
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--memory", "512"]
+        vb.customize ["modifyvm", :id, "--cpus", "1"]
+      end
+    end
+  end
+
+  ## DC2 Server nodes
+  IP_OFFSET = 2 + SERVER_DC1_NODES
+  (1..SERVER_DC2_NODES).each do |i|
+    config.vm.define "ns#{i+SERVER_DC1_NODES}.dc2.server.nomad" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "ns#{i+SERVER_DC1_NODES}-dc1-server-nomad"
+      subconfig.vm.network :private_network, ip: "10.0.1.#{i+IP_OFFSET}", virtualbox__intnet: true
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--memory", "512"]
+        vb.customize ["modifyvm", :id, "--cpus", "1"]
+      end
+    end
+  end
+
+  # Client nodes
+  ## Client DC1 nodes
+  IP_OFFSET = 2 + SERVER_DC1_NODES + SERVER_DC2_NODES
+  (1..CLIENT_DC1_NODES).each do |i|
+    config.vm.define "nc#{i}.dc1.client.nomad" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "nc#{i}-dc1-client-nomad"
+      subconfig.vm.network :private_network, ip: "10.0.1.#{i+IP_OFFSET}", virtualbox__intnet: true
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--memory", "512"]
+        vb.customize ["modifyvm", :id, "--cpus", "1"]
+      end
+    end
+  end
+  
+  ## Client DC2 nodes
+  IP_OFFSET = 2 + SERVER_DC1_NODES + SERVER_DC2_NODES + CLIENT_DC1_NODES
+  (1..CLIENT_DC1_NODES).each do |i|
+    config.vm.define "nc#{i+CLIENT_DC1_NODES}.dc2.client.nomad" do |subconfig|
+      subconfig.vm.box = BOX_IMAGE
+      subconfig.vm.hostname = "nc#{i+CLIENT_DC1_NODES}-dc2-client-nomad"
+      subconfig.vm.network :private_network, ip: "10.0.1.#{i+IP_OFFSET}", virtualbox__intnet: true
+      subconfig.vm.provider :virtualbox do |vb|
+        vb.customize ["modifyvm", :id, "--memory", "512"]
+        vb.customize ["modifyvm", :id, "--cpus", "1"]
+      end
     end
   end
 end
