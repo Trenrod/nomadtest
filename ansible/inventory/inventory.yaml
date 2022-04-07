@@ -1,0 +1,19 @@
+all: # keys must be unique, i.e. only one 'hosts' per group
+  jumpserver:
+    ansible_ssh_private_key_file: ../../inventory/.vagrant\machines\nj1.local.jumper.nomad\virtualbox\private_key
+    ansible_user: vagrant
+    ansible_host: 192.168.100.200
+  nomadserver:
+    ns1dc1:
+      ansible_ssh_private_key_file: ../../inventory/.vagrant\machines\ns1.dc1.server.nomad\virtualbox\private_key
+      ansible_user: vagrant
+      ansible_host: 192.168.100.202
+    ns1dc2:
+      ansible_ssh_private_key_file: ../../inventory/.vagrant\machines\ns1.dc2.server.nomad\virtualbox\private_key
+      ansible_user: vagrant
+      ansible_host: 192.168.100.202
+    ns2dc2:
+      ansible_ssh_private_key_file: ../../inventory/.vagrant\machines\ns2.dc2.server.nomad\virtualbox\private_key
+      ansible_user: vagrant
+      ansible_host: 192.168.100.203
+    
