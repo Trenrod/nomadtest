@@ -45,7 +45,7 @@ Will need to make sure the VMS can be accessed from host as well as each other b
 
 For example giving a Host-only VM the IP 10.0.1.2
 ```
-subconfig.vm.network :hostonly, ip: "10.0.1.2"
+subconfig.vm.network "private_network", ip: "10.0.1.2"
 ```
 
 To create such network interface open Virtualbox press Ctrl+H and create such interface.
@@ -56,11 +56,20 @@ To create such network interface open Virtualbox press Ctrl+H and create such in
 
 Host-only does not allow to connect a VM to the internet. To support that we need a bridged network interface in our VM.
 
-We cannot set a dedicated IP address.
+For the public network we dont care for the IP so we let Virtualbox pick it for us.
+
+I addition to that you need to define the bridge network interface to use on the host. You can list all names with VBoxManage 
+```sh 
+C:\Program Files\Oracle\VirtualBox>VBoxManage.exe list bridgedifs
+
+# result ->
+# Name: Realtek 8821CE Wireless LAN 802.11ac PCI-E NIC
+# ...
+```
 
 For example giving a Bridged network interface to the VM
 ```
-subconfig.vm.network :bridged
+subconfig.vm.network "public_network", bridge: "Realtek 8821CE Wireless LAN 802.11ac PCI-E NIC"
 ```
 
 ## Components
@@ -69,9 +78,3 @@ As seen above we need in addition to the VM itself several components e.g. Nomad
 
 It may makes no sense to use `Ansible` here to provision the VM's. But if its fully automated it can't be that bad, right? Or I just suck so hard at Ruby and Shell scripts that I rather overkill this. Maybe we can reuse it later anyways.
 
-There fore next TODOS:
-
- - [ ] TODO install ansible manually on the jumpserver
- - [ ] TODO create static inventory with dedicated groups for node server and node client
- - [ ] TODO create ansible scripts to provision them
- 

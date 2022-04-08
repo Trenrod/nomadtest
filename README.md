@@ -5,11 +5,43 @@ For simplicity we will use a local emulation of multiple datacenters using Vagra
 
 Enjoy.
 
-## Test infrastructure with multiple vms and datacenters with Vagrant
+## Create local test infrastructure
 
-[README.md](infrastructure/README.md)
+Install, setup and doc -> [README.md](infrastructure/README.md)
 
-## TODO Bootstrap jumpserver and attach vms to nomad cluster
+Fast path:
+ * Replace in the vagrant/Vagrantfile the name of the bridged network to use which you use to connection to the internet. You can check available network adapter names with 
+    ```sh
+    C:\Program Files\Oracle\VirtualBox>VBoxManage.exe list bridgedifs
+    ```
+ * Execute
+    ```sh
+    cd vagrant
+    vagrant up
+    ```
+
+## Provision local test infrastructure
+
+Install, setup and doc -> [README.md](infrastructure/README.md)
+
+Fast path:
+ * on windows
+    ```sh
+    cd ansible
+    python -m venv .venv
+    source .venv/bin/activate
+    pip i -r requirements.txt
+    ansible-playbook provision-all.yaml -i inventory/inventory.yaml
+    ```
+
+ * on linux
+    ```sh
+    cd ansible
+    python -m venv .venv
+    .venv/Scripts/activate
+    pip i -r requirements.txt
+    ansible-playbook provision-all.yaml -i inventory/inventory.yaml
+    ```
 
 ## TODO Add Loadbalancer
 
