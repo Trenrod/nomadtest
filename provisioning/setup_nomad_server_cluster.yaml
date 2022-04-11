@@ -1,0 +1,19 @@
+# Helping links
+#
+# special_variables: https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
+#
+
+---
+- name: 'Setup all given server from the inventory file'
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: 'Install nomad on all machines'
+      include_role:
+        name: 'install_nomad'
+
+    - name: 'Configures nomad server by creating a server cluster'
+      include_role:
+        name: 'configure_nomad_server'
+      when: '"nomadserver" in group_names'

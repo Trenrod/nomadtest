@@ -1,0 +1,42 @@
+all: # keys must be unique, i.e. only one 'hosts' per group
+  children:
+    jumpservers:
+      hosts:
+        jumpserver1:
+          ansible_ssh_private_key_file: '{{inventory_dir}}/../../infrastructure/.vagrant/machines/nj1.local.jumper.nomad/virtualbox/private_key'
+          ansible_user: vagrant
+          ansible_host: 10.0.1.2
+    nomadserver:
+      vars:
+        initial_nomad_server_master_host: 'ns1dc1'
+      hosts:
+        ns1dc1:
+          ansible_ssh_private_key_file: '{{inventory_dir}}/../../infrastructure/.vagrant/machines/ns1.dc1.server.nomad/virtualbox/private_key'
+          ansible_user: vagrant
+          ansible_host: 10.0.1.3
+        ns1dc2:
+          ansible_ssh_private_key_file: '{{inventory_dir}}/../../infrastructure/.vagrant/machines/ns1.dc2.server.nomad/virtualbox/private_key'
+          ansible_user: vagrant
+          ansible_host: 10.0.1.4
+        ns2dc2:
+          ansible_ssh_private_key_file: '{{inventory_dir}}/../../infrastructure/.vagrant/machines/ns2.dc2.server.nomad/virtualbox/private_key'
+          ansible_user: vagrant
+          ansible_host: 10.0.1.5
+    nomadclients:
+      hosts:
+        nc1dc1:
+          ansible_ssh_private_key_file: '{{inventory_dir}}/../../infrastructure/.vagrant/machines/nc1.dc1.client.nomad/virtualbox/private_key'
+          ansible_user: vagrant
+          ansible_host: 10.0.1.6
+        # nc2dc1:
+        #   ansible_ssh_private_key_file: "{{inventory_dir}}/../../infrastructure/.vagrant/machines/nc2.dc1.client.nomad/virtualbox/private_key"
+        #   ansible_user: vagrant
+        #   ansible_host: 10.0.1.7
+        ns1dc2:
+          ansible_ssh_private_key_file: '{{inventory_dir}}/../../infrastructure/.vagrant/machines/nc1.dc2.client.nomad/virtualbox/private_key'
+          ansible_user: vagrant
+          ansible_host: 10.0.1.8
+        # ns2dc2:
+        #   ansible_ssh_private_key_file: "{{inventory_dir}}/../../infrastructure/.vagrant/machines/nc2.dc2.client.nomad/virtualbox/private_key"
+        #   ansible_user: vagrant
+        #   ansible_host: 10.0.1.9

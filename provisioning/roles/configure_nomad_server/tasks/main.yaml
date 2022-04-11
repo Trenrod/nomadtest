@@ -1,0 +1,15 @@
+---
+# Configure nomad servers
+
+- name: 'Identify initial nomad master server'
+  set_fact:
+    var: 'hostvars[inventory_hostname]["initial_nomad_server_master_host"]'
+
+- name: 'Initial master server name'
+  debug:
+    var: 'initial_nomad_server_master_host'
+
+- name: 'Copy nomad server config'
+  ansible.builtin.template:
+    src: 'files/nomad_server.hcl.j2'
+    dest: '/etc/nomad_server.hcl'

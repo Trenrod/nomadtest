@@ -23,12 +23,11 @@ Vagrant.configure("2") do |config|
 
   # Server nodes
   ## DC1 Server nodes
-  IP_OFFSET = 2
   (1..SERVER_DC1_NODES).each do |i|
     config.vm.define "ns#{i}.dc1.server.nomad" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "ns#{i}-dc1-server-nomad"
-      subconfig.vm.network "private_network", ip: "10.0.1.#{i+IP_OFFSET}"
+      subconfig.vm.network "private_network", ip: "10.0.1.#{i+2}"
       subconfig.vm.network "public_network", bridge: BRIDGE_NETWORK_INTERFACE_NAME
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--memory", "512"]
@@ -38,12 +37,11 @@ Vagrant.configure("2") do |config|
   end
 
   ## DC2 Server nodes
-  IP_OFFSET = 2 + SERVER_DC1_NODES
   (1..SERVER_DC2_NODES).each do |i|
     config.vm.define "ns#{i}.dc2.server.nomad" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "ns#{i}-dc2-server-nomad"
-      subconfig.vm.network "private_network", ip: "10.0.1.#{i+IP_OFFSET}"
+      subconfig.vm.network "private_network", ip: "10.0.1.#{i+2+SERVER_DC1_NODES}"
       subconfig.vm.network "public_network", bridge: BRIDGE_NETWORK_INTERFACE_NAME
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--memory", "512"]
@@ -54,12 +52,11 @@ Vagrant.configure("2") do |config|
 
   # Client nodes
   ## Client DC1 nodes
-  IP_OFFSET = 2 + SERVER_DC1_NODES + SERVER_DC2_NODES
   (1..CLIENT_DC1_NODES).each do |i|
     config.vm.define "nc#{i}.dc1.client.nomad" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "nc#{i}-dc1-client-nomad"
-      subconfig.vm.network "private_network", ip: "10.0.1.#{i+IP_OFFSET}"
+      subconfig.vm.network "private_network", ip: "10.0.1.#{i+2+SERVER_DC1_NODES+SERVER_DC2_NODES}"
       subconfig.vm.network "public_network", bridge: BRIDGE_NETWORK_INTERFACE_NAME
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--memory", "512"]
@@ -69,12 +66,11 @@ Vagrant.configure("2") do |config|
   end
   
   ## Client DC2 nodes
-  IP_OFFSET = 2 + SERVER_DC1_NODES + SERVER_DC2_NODES + CLIENT_DC1_NODES
   (1..CLIENT_DC1_NODES).each do |i|
     config.vm.define "nc#{i}.dc2.client.nomad" do |subconfig|
       subconfig.vm.box = BOX_IMAGE
       subconfig.vm.hostname = "nc#{i}-dc2-client-nomad"
-      subconfig.vm.network "private_network", ip: "10.0.1.#{i+IP_OFFSET}"
+      subconfig.vm.network "private_network", ip: "10.0.1.#{i+2+SERVER_DC1_NODES+SERVER_DC2_NODES+CLIENT_DC1_NODES}"
       subconfig.vm.network "public_network", bridge: BRIDGE_NETWORK_INTERFACE_NAME
       subconfig.vm.provider :virtualbox do |vb|
         vb.customize ["modifyvm", :id, "--memory", "512"]
