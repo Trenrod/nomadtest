@@ -1,0 +1,10 @@
+[Unit]
+Description=Nomad server
+Requires=network.target
+After=syslog.target network.target
+[Service]
+Type=forking
+ExecStart=
+ExecStop=
+[Install]
+WantedBy=multi-user.target

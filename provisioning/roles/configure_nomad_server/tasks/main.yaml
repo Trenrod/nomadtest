@@ -1,15 +1,33 @@
 ---
 # Configure nomad servers
-
 - name: 'Identify initial nomad master server'
   set_fact:
-    var: 'hostvars[inventory_hostname]["initial_nomad_server_master_host"]'
-
-- name: 'Initial master server name'
-  debug:
-    var: 'initial_nomad_server_master_host'
+    initial_nomad_server_master_host: '{{hostvars[inventory_hostname]["initial_nomad_server_master_host"]}}'
+    initial_nomad_server_master_ip: '{{hostvars[initial_nomad_server_master_host]["ansible_host"]}}'
 
 - name: 'Copy nomad server config'
   ansible.builtin.template:
     src: 'files/nomad_server.hcl.j2'
     dest: '/etc/nomad_server.hcl'
+  become: true
+
+- name: 'Start nomad master servers'
+  ansible.builtin.command: 'nomad server -config=/etc/nomad_server.hcl -dc={{datacenterid}} -node={{inventory_hostname}}'
+  sudo nomad agent -config=/etc/nomad_server.hcl -dc=dc1 -node=ns1dc1 -data-dir=/var/lib/nomad -bind=10.0.1.3
+  register: 'nomad_server_start'
+  become: true
+
+- name: 'Start and join nomad servers to master'
+  ansible.builtin.command: 'nomad server -config=/etc/nomad_server.hcl -dc={{datacenterid}} -node={{inventory_hostname}}'
+  sudo nomad agent -config=/etc/nomad_server.hcl -dc=dc1 -node=ns1dc1 -data-dir=/var/lib/nomad -bind=10.0.1.3
+  register: 'nomad_server_start'
+  become: true
+
+- name: 'Debug server registration'
+  debug:
+    var: 'nomad_server_register'
+
+- name: 'Join as master server'
+  ansible.builtin.command: 'nomad server join {{initial_nomad_server_master_ip}}'
+  register: 'nomad_server_join'
+  become: true
