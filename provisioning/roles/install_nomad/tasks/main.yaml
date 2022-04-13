@@ -14,7 +14,7 @@
 
 - name: 'Add source repository into sources list'
   ansible.builtin.apt_repository:
-    repo: deb-src https://apt.releases.hashicorp.com {{lsb_name.stdout}} main
+    repo: deb [arch=amd64] https://apt.releases.hashicorp.com {{lsb_name.stdout}} main
     state: present
   become: true
 

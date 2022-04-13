@@ -1,4 +1,19 @@
+name = "{{name}}"
+
+data_dir  = "/var/lib/nomad"
+
+datacenter = "{{datacenter}}"
+
+addresses {
+  http = "{{public_ip}}"
+  rpc  = "{{internal_ip}}"
+  serf = "{{internal_ip}}"
+}
+
 server {
   enabled          = true
   bootstrap_expect = 3
+  server_join {
+    retry_join = [ "{{initial_nomad_server_master_ip}}" ]
+  }
 }

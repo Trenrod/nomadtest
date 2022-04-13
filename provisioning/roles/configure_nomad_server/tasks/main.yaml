@@ -1,5 +1,28 @@
 ---
 # Configure nomad servers
+- name: 'Ensure group "nomad" exists'
+  ansible.builtin.group:
+    name: nomad
+    state: present
+  become: true
+
+- name: 'Add the user "nomad" with a specific uid and a primary group of "nomad"'
+  ansible.builtin.user:
+    name: nomad
+    group: nomad
+    create_home: no
+    system: yes
+  become: true
+
+- name: 'Create a data_dir for nomad'
+  ansible.builtin.file:
+    path: '/var/lib/nomad'
+    state: directory
+    owner: nomad
+    group: nomad
+    mode: '0700'
+  become: true
+
 - name: 'Identify initial nomad master server'
   set_fact:
     initial_nomad_server_master_host: '{{hostvars[inventory_hostname]["initial_nomad_server_master_host"]}}'
@@ -8,26 +31,32 @@
 - name: 'Copy nomad server config'
   ansible.builtin.template:
     src: 'files/nomad_server.hcl.j2'
-    dest: '/etc/nomad_server.hcl'
+    dest: '/etc/nomad.d/nomad.hcl'
+  vars:
+    name: '{{inventory_hostname}}'
+    datacenter: '{{datacenterid}}'
+    public_ip: '{{"{{"}}GetPublicIP{{"}}"}} {{ansible_host}}' # Get any public IP from https://pkg.go.dev/github.com/hashicorp/go-sockaddr/template
+    internal_ip: '{{ansible_host}}' # Asume provisioning done from a jumpserver in private network
+    initial_nomad_server_master_ip: '{{initial_nomad_server_master_ip}}'
   become: true
 
-- name: 'Start nomad master servers'
-  ansible.builtin.command: 'nomad server -config=/etc/nomad_server.hcl -dc={{datacenterid}} -node={{inventory_hostname}}'
-  sudo nomad agent -config=/etc/nomad_server.hcl -dc=dc1 -node=ns1dc1 -data-dir=/var/lib/nomad -bind=10.0.1.3
-  register: 'nomad_server_start'
+- name: 'Create systemd service'
+  ansible.builtin.template:
+    src: 'files/nomad_server_service.j2'
+    dest: '/etc/systemd/system/nomad.service'
+  become: true
+  register: nomad_system_config
+
+- name: 'Start nomad server service'
+  ansible.builtin.systemd:
+    state: started
+    name: nomad.service
   become: true
 
-- name: 'Start and join nomad servers to master'
-  ansible.builtin.command: 'nomad server -config=/etc/nomad_server.hcl -dc={{datacenterid}} -node={{inventory_hostname}}'
-  sudo nomad agent -config=/etc/nomad_server.hcl -dc=dc1 -node=ns1dc1 -data-dir=/var/lib/nomad -bind=10.0.1.3
-  register: 'nomad_server_start'
+- name: 'Restart nomad service if config changed'
+  ansible.builtin.systemd:
+    state: restarted
+    name: nomad.service
+    daemon_reload: yes
   become: true
-
-- name: 'Debug server registration'
-  debug:
-    var: 'nomad_server_register'
-
-- name: 'Join as master server'
-  ansible.builtin.command: 'nomad server join {{initial_nomad_server_master_ip}}'
-  register: 'nomad_server_join'
-  become: true
+  when: nomad_system_config.changed

@@ -13,7 +13,11 @@
       include_role:
         name: 'install_nomad'
 
+    # TODO: install docker on all clients
+
     - name: 'Configures nomad server by creating a server cluster'
       include_role:
         name: 'configure_nomad_server'
       when: '"nomadserver" in group_names'
+
+    # TODO: Configures nomand clients to connect to server cluster
