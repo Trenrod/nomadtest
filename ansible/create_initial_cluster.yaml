@@ -13,7 +13,10 @@
       include_role:
         name: 'install_nomad'
 
-    # TODO: install docker on all clients
+    - name: 'Install docker on all client machines'
+      include_role:
+        name: 'install_docker'
+      when: '"nomadclients" in group_names'
 
     - name: 'Configures nomad server by creating a server cluster'
       include_role:
