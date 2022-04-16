@@ -1,5 +1,5 @@
 ---
-# Configure nomad servers
+# Configure nomad client
 - name: 'Ensure group "nomad" exists'
   ansible.builtin.group:
     name: nomad
@@ -28,26 +28,24 @@
     initial_nomad_server_master_host: '{{hostvars[inventory_hostname]["initial_nomad_server_master_host"]}}'
     initial_nomad_server_master_ip: '{{hostvars[initial_nomad_server_master_host]["ansible_host"]}}'
 
-- name: 'Copy nomad server config'
+- name: 'Copy nomad client config'
   ansible.builtin.template:
-    src: 'files/nomad_server.hcl.j2'
+    src: 'files/nomad_client.hcl.j2'
     dest: '/etc/nomad.d/nomad.hcl'
   vars:
     name: '{{inventory_hostname}}'
     datacenter: '{{datacenterid}}'
-    public_ip: '{{"{{"}}GetPublicIP{{"}}"}} {{ansible_host}}' # Get any public IP from https://pkg.go.dev/github.com/hashicorp/go-sockaddr/template
-    internal_ip: '{{ansible_host}}' # Asume provisioning done from a jumpserver in private network
     initial_nomad_server_master_ip: '{{initial_nomad_server_master_ip}}'
   become: true
 
 - name: 'Create systemd service'
   ansible.builtin.template:
-    src: 'files/nomad_server_service.j2'
+    src: 'files/nomad_service.j2'
     dest: '/etc/systemd/system/nomad.service'
   become: true
   register: nomad_system_config
 
-- name: 'Start nomad server service'
+- name: 'Start nomad client service'
   ansible.builtin.systemd:
     state: started
     name: nomad.service

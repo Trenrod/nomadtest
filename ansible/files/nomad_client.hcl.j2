@@ -1,0 +1,12 @@
+name = "{{name}}"
+
+data_dir  = "/var/lib/nomad"
+
+datacenter = "{{datacenter}}"
+
+client {
+  enabled = true
+  server_join {
+    retry_join = [ "{{initial_nomad_server_master_ip}}" ]
+  }
+}

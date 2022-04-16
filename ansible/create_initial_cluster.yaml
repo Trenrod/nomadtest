@@ -23,4 +23,9 @@
         name: 'configure_nomad_server'
       when: '"nomadserver" in group_names'
 
+    - name: 'Configures nomad client setting nomad as a service and configureing as client'
+      include_role:
+        name: 'configure_nomad_client'
+      when: '"nomadclients" in group_names'
+
     # TODO: Configures nomand clients to connect to server cluster

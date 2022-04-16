@@ -1,4 +1,6 @@
 all: # keys must be unique, i.e. only one 'hosts' per group
+  vars:
+    initial_nomad_server_master_host: 'ns1dc1'
   children:
     jumpservers:
       hosts:
@@ -7,8 +9,6 @@ all: # keys must be unique, i.e. only one 'hosts' per group
           ansible_user: vagrant
           ansible_host: 10.0.1.2
     nomadserver:
-      vars:
-        initial_nomad_server_master_host: 'ns1dc1'
       hosts:
         ns1dc1:
           ansible_ssh_private_key_file: '{{inventory_dir}}/../../infrastructure/.vagrant/machines/ns1.dc1.server.nomad/virtualbox/private_key'
